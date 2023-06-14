@@ -1,9 +1,9 @@
-// const SUCCESS = 200;
-// const CREATED = 201;
-// const NOT_FOUND = 400;
-// const INVALID = 401;
-// const USER_NOT_FOUND = 404;
-// const RULE_INVALID = 422;
+// const success = 200;
+// const created = 201;
+// const notFound = 400;
+// const invalid = 401;
+// const userNotFound = 404;
+// const ruleInvalid = 422;
 
 export type ServiceResponseErrorType = 'notFound' | 'invalid' | 'userNotFound' | 'ruleInvalid';
 export type ServiceResponseSuccessType = 'success' | 'created';

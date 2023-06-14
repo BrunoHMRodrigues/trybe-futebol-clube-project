@@ -1,4 +1,4 @@
-export default interface ITeam {
+export default interface IUser {
   id: number,
   username: string,
   role: string,
