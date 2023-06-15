@@ -17,7 +17,9 @@ export function verifyToken(token: string): TokenPayload {
   return decoded;
 }
 
-// export default {
-//   signToken,
-//   verifyToken,
-// };
+const jwtUtils = {
+  signToken,
+  verifyToken,
+};
+
+export default jwtUtils;

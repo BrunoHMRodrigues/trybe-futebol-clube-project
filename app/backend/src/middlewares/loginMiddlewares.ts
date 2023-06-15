@@ -62,8 +62,7 @@ interface CustomRequest extends Request {
 }
 
 const validateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
-  console.log('entrou validate');
-
+  // console.log('entrou validate');
   try {
     const { authorization } = req.headers;
     if (!authorization) {
@@ -77,7 +76,7 @@ const validateToken = (req: CustomRequest, res: Response, next: NextFunction) =>
       message: 'Token must be a valid token',
     });
   }
-  console.log('vai sair validate');
+  // console.log('vai sair validate');
 
   next();
 };

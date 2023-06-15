@@ -13,7 +13,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Seu teste', () => {
+describe('Verifica o funcionamento dos endpoints referentes a teams', () => {
   let chaiHttpResponse: Response;
 
   after(() => {

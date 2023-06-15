@@ -7,23 +7,26 @@ import { ServiceResponse } from '../types/serviceResponse';
 async function login(email: string, _password: string): Promise<ServiceResponse<string>> {
   const host = await UserModel.findOne({ where: { email } });
 
-  if (!host) return { status: 'invalid', data: { message: 'Invalid email or password' } };
+  const hostData = (host as UserModel).dataValues;
 
-  const token = signToken({ password: host.dataValues.password, email: host.dataValues.email });
+  // if (!host) return { status: 'invalid', data: { message: 'Invalid email or password' } };
+
+  const token = signToken({ password: hostData.password, email: hostData.email });
+  // const token = signToken({ password: host.dataValues.password, email: host.dataValues.email });
 
   return { status: 'success', data: token };
 }
 
 async function getUserRole(token: TokenPayload): Promise<ServiceResponse<string>> {
-  console.log('entrou service');
-  console.log('token no service', token);
+  // console.log('entrou service');
+  // console.log('token no service', token);
 
   const host = await UserModel.findOne({ where: { email: token.email } });
 
-  if (!host) return { status: 'invalid', data: { message: 'No user' } };
+  // if (!host) return { status: 'invalid', data: { message: 'No user' } };
 
-  const { role } = host.dataValues;
-  //   const token = signToken({ password: host.dataValues.password, email: host.dataValues.email });
+  const { role } = (host as UserModel).dataValues;
+  // const { role } = host.dataValues;
 
   return { status: 'success', data: role };
 }
