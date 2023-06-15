@@ -7,7 +7,7 @@ const {
   verifyEmailRules,
   verifyEmailExists,
   verifyPassword,
-//   validateToken,
+  validateToken,
 } = loginMiddlewares;
 
 const loginRouter = Router();
@@ -21,5 +21,7 @@ loginRouter.post(
   //   validateToken,
   loginController.login,
 );
+
+loginRouter.get('/role', validateToken, loginController.getUserRole);
 
 export default loginRouter;

@@ -5,6 +5,8 @@ import TeamModel from '../database/models/TeamModel';
 async function getAllTeams(): Promise<ServiceResponse<Team[]>> {
   const teams = await TeamModel.findAll();
 
+  console.log('teams', teams);
+
   return { status: 'success', data: teams };
 }
 
