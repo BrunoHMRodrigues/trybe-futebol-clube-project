@@ -13,7 +13,11 @@ async function login(req: Request, res: Response): Promise<Response> {
       .status(mapStatusHTTP(result.status)).json(result.data);
   }
 
-  return res.status(mapStatusHTTP(result.status)).json({ token: result.data });
+  const token = result.data;
+
+  return res.status(mapStatusHTTP(result.status))
+    // .header('Authorization', `Bearer ${token}`)
+    .json({ token });
 }
 
 async function getUserRole(req: Request, res: Response): Promise<Response> {

@@ -18,10 +18,9 @@ loginRouter.post(
   verifyEmailRules,
   verifyEmailExists,
   verifyPassword,
-  validateToken,
   loginController.login,
 );
 
-loginRouter.get('/role', validateToken, verifyEmailExists, loginController.getUserRole);
+loginRouter.get('/role', validateToken, loginController.getUserRole);
 
 export default loginRouter;

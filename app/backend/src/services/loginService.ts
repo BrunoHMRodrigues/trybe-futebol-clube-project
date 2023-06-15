@@ -18,9 +18,6 @@ async function login(email: string, _password: string): Promise<ServiceResponse<
 }
 
 async function getUserRole(token: TokenPayload): Promise<ServiceResponse<string>> {
-  // console.log('entrou service');
-  // console.log('token no service', token);
-
   const host = await UserModel.findOne({ where: { email: token.email } });
 
   // if (!host) return { status: 'invalid', data: { message: 'No user' } };
