@@ -64,11 +64,15 @@ interface CustomRequest extends Request {
 const validateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
     const { authorization } = req.headers;
+
     if (!authorization) {
       return res.status(mapStatusHTTP('invalid')).json({ message: 'Token not found' });
     }
+    console.log('vai entrar no verify');
+
     const decodedToken = verifyToken(authorization);
 
+    console.log('DECODED TOKEN', decodedToken);
     req.payload = decodedToken;
   } catch (error) {
     return res.status(mapStatusHTTP('invalid')).json({

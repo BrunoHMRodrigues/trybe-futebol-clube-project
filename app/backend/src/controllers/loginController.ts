@@ -22,6 +22,7 @@ async function login(req: Request, res: Response): Promise<Response> {
 
 async function getUserRole(req: Request, res: Response): Promise<Response> {
   const { authorization } = req.headers;
+
   const decodedToken = verifyToken(authorization as string);
 
   const result = await loginService.getUserRole(decodedToken);
