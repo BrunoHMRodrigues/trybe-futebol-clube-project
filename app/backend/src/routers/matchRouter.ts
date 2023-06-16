@@ -12,4 +12,6 @@ matchRouter.get('/', matchController.getMatches);
 
 matchRouter.patch('/:id/finish', validateToken, matchController.endMatch);
 
+matchRouter.patch('/:id', validateToken, matchController.updateMatch);
+
 export default matchRouter;
