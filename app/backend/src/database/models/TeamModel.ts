@@ -22,6 +22,10 @@ TeamModel.init({
   teamName: {
     type: DataTypes.STRING,
     allowNull: false,
+    references: {
+      model: 'matches',
+      key: 'id',
+    },
   },
 }, {
   sequelize: db,
