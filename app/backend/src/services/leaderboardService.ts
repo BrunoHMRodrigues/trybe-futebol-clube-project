@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+// import { Op } from 'sequelize';
 import MatchModel from '../database/models/MatchModel';
 // import { Team } from '../types/Team';
 import { ServiceResponse } from '../types/serviceResponse';
@@ -7,14 +7,15 @@ import ITeam from '../Interfaces/ITeam';
 import ILeaderboard from '../Interfaces/ILeaderboard';
 import IMatch from '../Interfaces/IMatch';
 
-async function getMatches(teamId: number): Promise<IMatch[]> {
+async function getMatches(homeOrAway: string, teamId: number): Promise<IMatch[]> {
   const matches = await MatchModel.findAll({
     where: {
       inProgress: false,
-      [Op.or]: [
-        { homeTeamId: teamId },
-        { awayTeamId: teamId },
-      ],
+      [homeOrAway]: teamId,
+      // [Op.or]: [
+      //   { homeTeamId: teamId },
+      //   { awayTeamId: teamId },
+      // ],
     },
   });
   return matches;
@@ -58,7 +59,7 @@ function createLeaderboardInfo(name: string, stats: TeamStats): ILeaderboard {
 
   const totalPoints = totalVictories * 3 + totalLosses * 0 + totalDraws * 1;
   const goalsBalance = goalsFavor - goalsOwn;
-  const efficiency = `${((totalPoints / (totalGames * 3)) * 100).toFixed(2)}%`;
+  const efficiency = `${((totalPoints / (totalGames * 3)) * 100).toFixed(2)}`;
 
   return {
     name,
@@ -79,6 +80,9 @@ function sortLeaderboard(leaderboard: ILeaderboard[]): ILeaderboard[] {
     if (a.totalPoints !== b.totalPoints) {
       // Ordenar por total de pontos (decrescente)
       return b.totalPoints - a.totalPoints;
+    } if (a.totalVictories !== b.totalVictories) {
+      // Ordenar por total de vitórias (decrescente)
+      return b.totalVictories - a.totalVictories;
     } if (a.goalsBalance !== b.goalsBalance) {
       // Ordenar por saldo de gols (decrescente)
       return b.goalsBalance - a.goalsBalance;
@@ -90,13 +94,13 @@ function sortLeaderboard(leaderboard: ILeaderboard[]): ILeaderboard[] {
   return leaderboard;
 }
 
-async function getLeaderboard(): Promise<ServiceResponse<ILeaderboard[]>> {
+async function getLeaderboard(homeOrAway: string): Promise<ServiceResponse<ILeaderboard[]>> {
   const teams = await TeamModel.findAll();
 
   const leaderboardPromises = teams.map(async (team: ITeam) => {
     const { id: teamId, teamName: name } = team;
 
-    const matches = await getMatches(teamId);
+    const matches = await getMatches(homeOrAway, teamId);
     const teamStats = calculateTeamStats(matches, teamId);
     const leaderboardInfo = createLeaderboardInfo(name, teamStats);
 

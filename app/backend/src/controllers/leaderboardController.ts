@@ -3,7 +3,19 @@ import leaderboardService from '../services/leaderboardService';
 import mapStatusHTTP from '../utils/mapStatusHTTP';
 
 async function getleaderboard(req: Request, res: Response): Promise<Response> {
-  const result = await leaderboardService.getLeaderboard();
+  const { path } = req;
+  let homeOrAway: string;
+
+  if (path.endsWith('/home')) {
+    homeOrAway = 'homeTeamId';
+  } else if (path.endsWith('/away')) {
+    homeOrAway = 'awayTeamId';
+  } else {
+    // Rota inválida, trate o erro adequadamente
+    return res.status(400).json({ error: 'invalid route' });
+  }
+
+  const result = await leaderboardService.getLeaderboard(homeOrAway);
 
   return res.status(mapStatusHTTP(result.status)).json(result.data);
 }
