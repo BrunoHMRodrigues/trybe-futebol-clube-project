@@ -5,7 +5,8 @@
 // const userNotFound = 404;
 // const ruleInvalid = 422;
 
-export type ServiceResponseErrorType = 'notFound' | 'invalid' | 'userNotFound' | 'ruleInvalid';
+export type ServiceResponseErrorType = 'notFound' | 'invalid' | 'userNotFound'
+| 'teamNotFound' | 'ruleInvalid';
 export type ServiceResponseSuccessType = 'success' | 'created';
 
 type ServiceReponseError = {

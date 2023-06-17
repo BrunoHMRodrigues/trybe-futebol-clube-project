@@ -7,6 +7,7 @@ function mapStatusHTTP(
     notFound: 400,
     invalid: 401,
     userNotFound: 404,
+    teamNotFound: 404,
     ruleInvalid: 422,
     success: 200,
     created: 201,

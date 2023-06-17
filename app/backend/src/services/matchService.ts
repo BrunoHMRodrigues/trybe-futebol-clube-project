@@ -48,7 +48,26 @@ async function updateMatch(
   if (!match) return { status: 'notFound', data: { message: noMatchFound } };
 
   await match.update({ homeTeamGoals, awayTeamGoals });
+
   return { status: 'success', data: { message: 'Finished' } };
+}
+
+async function createMatch(
+  homeTeamId: number,
+  awayTeamId: number,
+  homeTeamGoals: number,
+  awayTeamGoals: number,
+): Promise<ServiceResponse<IMatch>> {
+  const match = await MatchModel.create({
+    id: 0,
+    homeTeamId,
+    awayTeamId,
+    homeTeamGoals,
+    awayTeamGoals,
+    inProgress: true,
+  });
+
+  return { status: 'created', data: match.dataValues };
 }
 
 export default {
@@ -56,4 +75,5 @@ export default {
   getMatchesInProgress,
   endMatch,
   updateMatch,
+  createMatch,
 };
