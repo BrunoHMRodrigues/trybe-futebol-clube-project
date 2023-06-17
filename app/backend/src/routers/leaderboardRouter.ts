@@ -5,4 +5,6 @@ const leaderboardRouter = Router();
 
 leaderboardRouter.get('/home', leaderboardController.getleaderboard);
 
+leaderboardRouter.get('/away', leaderboardController.getleaderboard);
+
 export default leaderboardRouter;
