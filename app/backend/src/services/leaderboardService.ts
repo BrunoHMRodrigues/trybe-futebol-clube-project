@@ -58,16 +58,16 @@ function calculateTeamStats(matches: IMatch[], teamId: number): TeamStats {
     const otherTeam = teamIsHomeOrAway === 'homeTeam' ? 'awayTeam' : 'homeTeam';
 
     // INCREMENTANDO OS ATRIBUTOS
+    const myTeamGoals = match[`${teamIsHomeOrAway}Goals`];
+    const otherTeamGoals = match[`${otherTeam}Goals`];
     totalGames += 1;
-    goalsFavor += match[`${teamIsHomeOrAway}Goals`];
-    goalsOwn += match[`${otherTeam}Goals`];
-    if (goalsFavor > goalsOwn) {
-      totalVictories += 1;
-    } else if (goalsFavor < goalsOwn) {
-      totalLosses += 1;
-    } else {
-      totalDraws += 1;
-    }
+    // goalsFavor += match[`${teamIsHomeOrAway}Goals`];
+    // goalsOwn += match[`${otherTeam}Goals`];
+    goalsFavor += myTeamGoals;
+    goalsOwn += otherTeamGoals;
+    if (myTeamGoals > otherTeamGoals) totalVictories += 1;
+    else if (myTeamGoals < otherTeamGoals) totalLosses += 1;
+    else totalDraws += 1;
   });
 
   return { totalGames, goalsFavor, goalsOwn, totalVictories, totalLosses, totalDraws };
