@@ -7,18 +7,33 @@ import ITeam from '../Interfaces/ITeam';
 import ILeaderboard from '../Interfaces/ILeaderboard';
 import IMatch from '../Interfaces/IMatch';
 
+function filterMatchesByHomeOrAway(
+  matches: IMatch[],
+  homeOrAway: string,
+  teamId: number,
+): IMatch[] {
+  if (!homeOrAway) {
+    return matches;
+  }
+
+  return matches.filter((match: IMatch) => match[homeOrAway as keyof IMatch] === teamId);
+}
+
 async function getMatches(homeOrAway: string, teamId: number): Promise<IMatch[]> {
   const matches = await MatchModel.findAll({
     where: {
       inProgress: false,
-      [homeOrAway]: teamId,
-      // [Op.or]: [
-      //   { homeTeamId: teamId },
-      //   { awayTeamId: teamId },
-      // ],
+      // [homeOrAway]: teamId,
     },
   });
-  return matches;
+
+  // if (!homeOrAway) return matches;
+
+  // const filteredMatches = matches.filter((match: IMatch) => match[homeOrAway] === teamId);
+
+  // return filteredMatches;
+
+  return filterMatchesByHomeOrAway(matches, homeOrAway, teamId);
 }
 
 interface TeamStats {
@@ -35,13 +50,17 @@ function calculateTeamStats(matches: IMatch[], teamId: number): TeamStats {
   let totalLosses = 0; let goalsFavor = 0; let goalsOwn = 0;
 
   matches.forEach((match: IMatch) => {
+    // CASO TIME DA CASA OU DE FORA NÃO CORRESPONDA COM O TIME: PULAR PARA PRÓXIMO LOOP
+    if (match.homeTeamId !== teamId && match.awayTeamId !== teamId) return;
+
+    // PEGAR SE O TIME EM QUESTÃO É DE CASA OU DE FORA
     const teamIsHomeOrAway = match.homeTeamId === teamId ? 'homeTeam' : 'awayTeam';
     const otherTeam = teamIsHomeOrAway === 'homeTeam' ? 'awayTeam' : 'homeTeam';
 
+    // INCREMENTANDO OS ATRIBUTOS
     totalGames += 1;
     goalsFavor += match[`${teamIsHomeOrAway}Goals`];
     goalsOwn += match[`${otherTeam}Goals`];
-
     if (goalsFavor > goalsOwn) {
       totalVictories += 1;
     } else if (goalsFavor < goalsOwn) {
@@ -58,6 +77,7 @@ function createLeaderboardInfo(name: string, stats: TeamStats): ILeaderboard {
   const { totalGames, goalsFavor, goalsOwn, totalVictories, totalLosses, totalDraws } = stats;
 
   const totalPoints = totalVictories * 3 + totalLosses * 0 + totalDraws * 1;
+
   const goalsBalance = goalsFavor - goalsOwn;
   const efficiency = `${((totalPoints / (totalGames * 3)) * 100).toFixed(2)}`;
 

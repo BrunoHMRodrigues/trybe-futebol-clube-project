@@ -12,7 +12,7 @@ async function getleaderboard(req: Request, res: Response): Promise<Response> {
     homeOrAway = 'awayTeamId';
   } else {
     // Rota inválida, trate o erro adequadamente
-    return res.status(400).json({ error: 'invalid route' });
+    homeOrAway = '';
   }
 
   const result = await leaderboardService.getLeaderboard(homeOrAway);
