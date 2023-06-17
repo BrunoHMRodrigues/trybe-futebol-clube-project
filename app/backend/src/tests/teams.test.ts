@@ -16,7 +16,7 @@ const { expect } = chai;
 describe('Verifica o funcionamento dos endpoints referentes a teams', () => {
   let chaiHttpResponse: Response;
 
-  after(() => {
+  afterEach(() => {
     sinon.restore();
   });
 
