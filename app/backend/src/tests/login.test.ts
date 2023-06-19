@@ -12,6 +12,7 @@ import jwtUtils from '../utils/jwtUtils';
 import { signToken, verifyToken } from '../utils/jwtUtils';
 import { decodedToken, getUser, token } from './mocks/userMocks';
 import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
 
 chai.use(chaiHttp);
 
@@ -26,10 +27,22 @@ describe('Verifica o funcionamento com sucesso dos endpoints referentes a login'
 
   describe('Verifica o endpoint /login', () => {
     it('Verifica se é possível fazer login', async () => {
+      // OLHAR O verifyEmailExists especifico compareSync
+      sinon
+      .stub(bcrypt, 'compareSync')
+      .resolves(true);
+
       sinon
         .stub(UserModel, 'findOne')
         .resolves(getUser as unknown as UserModel);
-  
+
+      // sinon
+      // .stub(jwt, 'sign')
+      // .resolves('token');
+      sinon.stub(jwt, 'sign').callsFake(() => {
+        return 'token';
+      });
+        
       sinon
         .stub(jwtUtils, 'signToken')
         .returns('token');
@@ -52,6 +65,10 @@ describe('Verifica o funcionamento com sucesso dos endpoints referentes a login'
       sinon
         .stub(UserModel, 'findOne')
         .resolves(getUser as unknown as UserModel);
+
+        sinon.stub(jwt, 'verify').callsFake(() => {
+          return decodedToken;
+        });
   
       sinon
         .stub(jwtUtils, 'verifyToken')

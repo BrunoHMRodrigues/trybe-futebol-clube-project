@@ -1,11 +1,13 @@
 import { User } from '../../types/User'
 
-const getUser: User = {
-  id: 2,
-  username: 'User',
-  role: 'user',
-  email: 'teste@teste.com',
-  password: 'password',
+const getUser: { dataValues: User } = {
+  dataValues: {
+    id: 2,
+    username: 'User',
+    role: 'user',
+    email: 'teste@teste.com',
+    password: 'password',
+  }
 }
 
 const decodedToken = {

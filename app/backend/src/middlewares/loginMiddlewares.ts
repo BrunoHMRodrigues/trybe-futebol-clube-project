@@ -37,6 +37,7 @@ const verifyEmailExists = async (req: Request, res: Response, next: NextFunction
 
   const host = await UserModel.findOne({ where: { email } });
 
+  // REVER SE ISSO DEVERIA ESTAR NESSE MIDDLEWARE
   if (!host || !bcrypt.compareSync(password, host.dataValues.password)) {
     // return { status: 'invalid', data: { message: invalidData } };
     return res.status(mapStatusHTTP('invalid'))
