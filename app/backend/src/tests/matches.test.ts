@@ -9,8 +9,23 @@ import TeamModel from '../database/models/TeamModel';
 import { Response } from 'superagent';
 import IGetMatch from '../Interfaces/IGetMatch';
 import MatchModel from '../database/models/MatchModel';
-import { allMatches, allMatchesInProgress, createdMatch, createMatchInput, editedMatch, editMatchInput, finishedMatch } from './mocks/matchMocks';
+import {
+    allMatches,
+    allMatchesInProgress,
+    createdMatch,
+    createMatchInput,
+    editedMatch,
+    editMatchInput,
+    finishedMatch,
+    homeTeam,
+    awayTeam, 
+    matchToEdit} from './mocks/matchMocks';
 import IMatch from '../Interfaces/IMatch';
+import jwtUtils from '../utils/jwtUtils';
+import { signToken, verifyToken } from '../utils/jwtUtils';
+import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
+import { decodedToken, getUser, token } from './mocks/userMocks';
 
 chai.use(chaiHttp);
 
@@ -59,13 +74,26 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
                 .stub(MatchModel, 'create')
                 .resolves(createdMatch as unknown as MatchModel);
 
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+              
+                sinon
+                .stub(jwtUtils, 'verifyToken')
+                .returns(decodedToken);
+
+                sinon.stub(TeamModel, 'findOne')
+                .onFirstCall().resolves(homeTeam as unknown as TeamModel)
+                .onSecondCall().resolves(awayTeam as unknown as TeamModel);
+
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
-                    .send(createMatchInput);
+                    .send(createMatchInput)
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(201);
-                expect(chaiHttpResponse.body).to.deep.equal(createdMatch);
+                expect(chaiHttpResponse.body).to.deep.equal(createdMatch.dataValues);
             });
         });
     });
@@ -76,16 +104,27 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
                 const match = new MatchModel();
                 sinon
                 .stub(MatchModel, 'findOne')
-                .resolves(createdMatch as unknown as MatchModel);
+                .resolves(matchToEdit as unknown as MatchModel);
 
                 sinon
-                .stub(match, 'update')
-                .resolves(editedMatch as unknown as MatchModel);
+                  .stub(MatchModel, 'update')
+                  .resolves();
+
+                // sinon.stub(match, 'update').callsFake(() => Promise.resolve(editedMatch as unknown as MatchModel));
+
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+              
+                sinon
+                .stub(jwtUtils, 'verifyToken')
+                .returns(decodedToken);
 
                 chaiHttpResponse = await chai
                     .request(app)
-                    .patch('/matches/51')
-                    .send(editMatchInput);
+                    .patch('/matches/20')
+                    .send(editMatchInput)
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(200);
                 expect(chaiHttpResponse.body.message).to.be.equal('Finished');
@@ -105,9 +144,18 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
                 .stub(match, 'update')
                 .resolves(finishedMatch as unknown as MatchModel);
 
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+              
+                sinon
+                .stub(jwtUtils, 'verifyToken')
+                .returns(decodedToken);
+
                 chaiHttpResponse = await chai
                     .request(app)
-                    .patch('/matches/51/finish');
+                    .patch('/matches/51/finish')
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(200);
                 expect(chaiHttpResponse.body.message).to.be.equal('Finished');

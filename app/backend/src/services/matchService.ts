@@ -47,7 +47,13 @@ async function updateMatch(
 
   if (!match) return { status: 'notFound', data: { message: noMatchFound } };
 
-  await match.update({ homeTeamGoals, awayTeamGoals });
+  console.log('VAI ENTRAR NO UPDATE');
+
+  await MatchModel.update(
+    { homeTeamGoals, awayTeamGoals },
+    { where: { id } },
+  );
+  console.log('PASSOU DO UPDATE');
 
   return { status: 'success', data: { message: 'Finished' } };
 }

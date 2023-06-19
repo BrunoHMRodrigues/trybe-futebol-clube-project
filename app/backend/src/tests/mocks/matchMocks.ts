@@ -4,6 +4,7 @@ import IGetMatch from "../../Interfaces/IGetMatch";
 import IMatch from "../../Interfaces/IMatch";
 import ICreateMatch from '../../Interfaces/ICreateMatch';
 import IEditMatch from '../../Interfaces/IEditMatch';
+import ITeam from "../../Interfaces/ITeam";
 
 const allMatches: IGetMatch[] = [
     {
@@ -844,13 +845,24 @@ const createMatchInput: ICreateMatch = {
     awayTeamGoals: 1,
 }
 
-const createdMatch: IMatch = {
-    id: 51,
-    homeTeamId: 3,
-    homeTeamGoals: 7,
-    awayTeamId: 5,
-    awayTeamGoals: 1,
-    inProgress: true,
+const createdMatch: { dataValues: IMatch } = {
+    dataValues: {
+      id: 51,
+      homeTeamId: 3,
+      homeTeamGoals: 7,
+      awayTeamId: 5,  
+      awayTeamGoals: 1,
+      inProgress: true,
+    }
+}
+
+const matchToEdit: IMatch = {
+  id: 20,
+  homeTeamId: 3,
+  homeTeamGoals: 5,
+  awayTeamId: 5,  
+  awayTeamGoals: 1,
+  inProgress: true,
 }
 
 const editMatchInput: IEditMatch = {
@@ -859,7 +871,7 @@ const editMatchInput: IEditMatch = {
 }
 
 const editedMatch: IMatch = {
-    id: 51,
+    id: 20,
     homeTeamId: 3,
     homeTeamGoals: 8,
     awayTeamId: 5,
@@ -876,6 +888,17 @@ const finishedMatch: IMatch = {
     inProgress: false,
 }
 
+const homeTeam: ITeam = {
+  id: 3,
+  teamName: 'Botafogo',
+}
+
+
+const awayTeam: ITeam = {
+  id: 5,
+  teamName: 'Cruzeiro'
+}
+
 // const serviceSuccessGetAllMatches: ServiceResponse<IGetMatch[]> = {
 //   status: 'success',
 //   data: allMatches,
@@ -886,8 +909,11 @@ export {
   allMatchesInProgress,
   createMatchInput,
   createdMatch,
+  matchToEdit,
   editMatchInput,
   editedMatch,
   finishedMatch,
+  homeTeam,
+  awayTeam,
 //   serviceSuccessGetAllMatches,
 };

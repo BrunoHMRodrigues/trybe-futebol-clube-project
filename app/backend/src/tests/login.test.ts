@@ -66,9 +66,9 @@ describe('Verifica o funcionamento com sucesso dos endpoints referentes a login'
         .stub(UserModel, 'findOne')
         .resolves(getUser as unknown as UserModel);
 
-        sinon.stub(jwt, 'verify').callsFake(() => {
-          return decodedToken;
-        });
+      sinon.stub(jwt, 'verify').callsFake(() => {
+        return decodedToken;
+      });
   
       sinon
         .stub(jwtUtils, 'verifyToken')
