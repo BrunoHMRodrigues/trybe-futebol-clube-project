@@ -8,31 +8,41 @@ import { app } from '../app';
 import TeamModel from '../database/models/TeamModel';
 
 import { Response } from 'superagent';
-import IGetMatch from '../Interfaces/IGetMatch';
 import MatchModel from '../database/models/MatchModel';
 import {
     allMatches,
     allMatchesInProgress,
     createdMatch,
     createMatchInput,
-    editedMatch,
     editMatchInput,
-    finishedMatch,
     homeTeam,
     awayTeam, 
     matchToEdit} from './mocks/matchMocks';
-import IMatch from '../Interfaces/IMatch';
 import jwtUtils from '../utils/jwtUtils';
-import { signToken, verifyToken } from '../utils/jwtUtils';
 import * as jwt from 'jsonwebtoken';
-import * as bcrypt from 'bcryptjs';
-import { decodedToken, getUser, token } from './mocks/userMocks';
+import { decodedToken } from './mocks/userMocks';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
-beforeEach(() => {
+function setupStubs() {
+    sinon.stub(jwt, 'verify').callsFake(() => {
+        return decodedToken;
+    });
+
+    sinon
+        .stub(jwtUtils, 'verifyToken')
+        .returns(decodedToken);
+}
+
+function beforeEachSetup () {
+    beforeEach(() => {
+        setupStubs();
+    });
+}
+
+afterEach(() => {
   sinon.restore();
 });
 
@@ -70,18 +80,11 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
         });
 
         describe('Verifica o post', () => {
+            beforeEachSetup();
             it('Verifica se é possível cadastrar uma partida com sucesso', async () => {
                 sinon
                 .stub(MatchModel, 'create')
                 .resolves(createdMatch as unknown as MatchModel);
-
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-              
-                sinon
-                .stub(jwtUtils, 'verifyToken')
-                .returns(decodedToken);
 
                 sinon.stub(TeamModel, 'findOne')
                 .onFirstCall().resolves(homeTeam as unknown as TeamModel)
@@ -101,6 +104,7 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
 
     describe('Verifica o endpoint /matches/:id', () => {
         describe('Verifica o patch', () => {
+            beforeEachSetup();
             it('Verifica se é possível editar uma partida com sucesso', async () => {
                 sinon
                 .stub(MatchModel, 'findOne')
@@ -109,14 +113,6 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
                 sinon
                   .stub(MatchModel, 'update')
                   .resolves();
-
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-              
-                sinon
-                .stub(jwtUtils, 'verifyToken')
-                .returns(decodedToken);
 
                 chaiHttpResponse = await chai
                     .request(app)
@@ -132,27 +128,15 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
 
     describe('Verifica o endpoint /matches/:id/finish', () => {
         describe('Verifica o patch', () => {
+            beforeEachSetup();
             it('Verifica se é possível finalizar uma partida em andamento com sucesso', async () => {
-                // const match = new MatchModel();
                 sinon
                 .stub(MatchModel, 'findOne')
                 .resolves(createdMatch as unknown as MatchModel);
 
-                // sinon
-                // .stub(match, 'update')
-                // .resolves(finishedMatch as unknown as MatchModel);
-
                 sinon
                   .stub(MatchModel, 'update')
                   .resolves();
-
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-              
-                sinon
-                .stub(jwtUtils, 'verifyToken')
-                .returns(decodedToken);
 
                 chaiHttpResponse = await chai
                     .request(app)
@@ -169,6 +153,8 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
 describe('Verifica os casos de falha referentes aos endpoints referentes a matches', () => {
     let chaiHttpResponse: Response;
 
+    beforeEachSetup();
+
     describe('Verifica o endpoint /matches', () => {
         // describe('Verifica o get com filtro', () => {
             // SE CRIAR LÓGICA DE FALHAS ACRESCENTAR
@@ -176,12 +162,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
 
         describe('Verifica o post', () => {
             it('Verifica se o time da casa foi informado', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
 
                 chaiHttpResponse = await chai
                     .request(app)
@@ -198,13 +178,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             });
 
             it('Verifica se a quantidade de gols do time da casa foi informado', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-                
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -219,14 +192,7 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                 expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
             });
 
-            it('Verifica se o time da fora foi informado', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-                
+            it('Verifica se o time da fora foi informado', async () => {                
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -242,13 +208,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             });
 
             it('Verifica se a quantidade de gols do time de fora foi informado', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -264,13 +223,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             });
 
             it('Verifica se a partida é válida: Times informados são diferentes', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-                
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -287,13 +239,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             });
 
             it('Verifica se a partida é válida: Times informados existem', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-                
                 sinon.stub(MatchModel, 'findOne')
                 .onFirstCall().resolves(null)
                 .onSecondCall().resolves(createdMatch as unknown as MatchModel);
@@ -320,14 +265,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             // VER QUESTÃO DO TOKEN
             it('Verifica se a partida existe', async () => {
                 // ID
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-
                 sinon
                 .stub(MatchModel, 'findOne')
                 .resolves(null);
@@ -343,13 +280,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             });
 
             it('Verifica se a nova quantidade de gols do time da casa foi informada', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-                
                 chaiHttpResponse = await chai
                     .request(app)
                     .patch('/matches/51')
@@ -363,13 +293,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             });
 
             it('Verifica se a nova quantidade de gols do time de fora foi informada', async () => {
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-
                 chaiHttpResponse = await chai
                     .request(app)
                     .patch('/matches/51')
@@ -389,13 +312,6 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             // VER QUESTÃO DO TOKEN
             it('Verifica se a partida existe', async () => {
                 // ID
-                sinon.stub(jwt, 'verify').callsFake(() => {
-                    return decodedToken;
-                });
-                sinon
-                    .stub(jwtUtils, 'verifyToken')
-                    .returns(decodedToken);
-
                 sinon
                 .stub(MatchModel, 'findOne')
                 .resolves(null);
