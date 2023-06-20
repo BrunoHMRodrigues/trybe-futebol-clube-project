@@ -19,8 +19,12 @@ const verifyRequestDataToPatchMatch = (req: Request, res: Response, next: NextFu
 
 const verifyRequestDataToCreateMatch = (req: Request, res: Response, next: NextFunction) => {
   const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = req.body;
-
-  if (!homeTeamId || !awayTeamId || !homeTeamGoals || !awayTeamGoals) {
+  // Seria válido verificar se os gols são maiores ou iguais a 0
+  if (
+    !homeTeamId || !awayTeamId
+    || homeTeamGoals === undefined
+    || awayTeamGoals === undefined
+  ) {
     return res.status(mapStatusHTTP('notFound'))
       .json({ message: 'All fields must be filled' });
   }
