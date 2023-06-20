@@ -1,5 +1,6 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+
 // @ts-ignore
 import chaiHttp = require('chai-http');
 
@@ -101,7 +102,6 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
     describe('Verifica o endpoint /matches/:id', () => {
         describe('Verifica o patch', () => {
             it('Verifica se é possível editar uma partida com sucesso', async () => {
-                const match = new MatchModel();
                 sinon
                 .stub(MatchModel, 'findOne')
                 .resolves(matchToEdit as unknown as MatchModel);
@@ -109,8 +109,6 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
                 sinon
                   .stub(MatchModel, 'update')
                   .resolves();
-
-                // sinon.stub(match, 'update').callsFake(() => Promise.resolve(editedMatch as unknown as MatchModel));
 
                 sinon.stub(jwt, 'verify').callsFake(() => {
                     return decodedToken;
@@ -135,14 +133,18 @@ describe('Verifica os casos de sucesso referentes aos endpoint referentes a matc
     describe('Verifica o endpoint /matches/:id/finish', () => {
         describe('Verifica o patch', () => {
             it('Verifica se é possível finalizar uma partida em andamento com sucesso', async () => {
-                const match = new MatchModel();
+                // const match = new MatchModel();
                 sinon
                 .stub(MatchModel, 'findOne')
                 .resolves(createdMatch as unknown as MatchModel);
 
+                // sinon
+                // .stub(match, 'update')
+                // .resolves(finishedMatch as unknown as MatchModel);
+
                 sinon
-                .stub(match, 'update')
-                .resolves(finishedMatch as unknown as MatchModel);
+                  .stub(MatchModel, 'update')
+                  .resolves();
 
                 sinon.stub(jwt, 'verify').callsFake(() => {
                     return decodedToken;
@@ -174,6 +176,13 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
 
         describe('Verifica o post', () => {
             it('Verifica se o time da casa foi informado', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -181,13 +190,21 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                         homeTeamGoals: 7,
                         awayTeamId: 5,
                         awayTeamGoals: 1
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
-                expect(chaiHttpResponse.body.message).to.be('All fields must be filled');
+                expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
             });
 
             it('Verifica se a quantidade de gols do time da casa foi informado', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+                
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -195,13 +212,21 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                         homeTeamId: 3,
                         awayTeamId: 5,
                         awayTeamGoals: 1
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
-                expect(chaiHttpResponse.body.message).to.be('All fields must be filled');
+                expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
             });
 
             it('Verifica se o time da fora foi informado', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+                
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -209,13 +234,21 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                         homeTeamId: 3,
                         homeTeamGoals: 7,
                         awayTeamGoals: 1
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
-                expect(chaiHttpResponse.body.message).to.be('All fields must be filled');
+                expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
             });
 
             it('Verifica se a quantidade de gols do time de fora foi informado', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -223,13 +256,21 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                         homeTeamId: 3,
                         homeTeamGoals: 7,
                         awayTeamId: 5
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
-                expect(chaiHttpResponse.body.message).to.be('All fields must be filled');
+                expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
             });
 
             it('Verifica se a partida é válida: Times informados são diferentes', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+                
                 chaiHttpResponse = await chai
                     .request(app)
                     .post('/matches')
@@ -238,13 +279,21 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                         homeTeamGoals: 7,
                         awayTeamId: 1,
                         awayTeamGoals: 1
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(422);
-                expect(chaiHttpResponse.body.message).to.be('It is not possible to create a match with two equal teams');
+                expect(chaiHttpResponse.body.message).to.be.equal('It is not possible to create a match with two equal teams');
             });
 
             it('Verifica se a partida é válida: Times informados existem', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+                
                 sinon.stub(MatchModel, 'findOne')
                 .onFirstCall().resolves(null)
                 .onSecondCall().resolves(createdMatch as unknown as MatchModel);
@@ -257,10 +306,11 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                         homeTeamGoals: 7,
                         awayTeamId: 51,
                         awayTeamGoals: 1
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(404);
-                expect(chaiHttpResponse.body.message).to.be('There is no team with such id!');
+                expect(chaiHttpResponse.body.message).to.be.equal('There is no team with such id!');
             });
         });
     });
@@ -270,6 +320,14 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             // VER QUESTÃO DO TOKEN
             it('Verifica se a partida existe', async () => {
                 // ID
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+
                 sinon
                 .stub(MatchModel, 'findOne')
                 .resolves(null);
@@ -277,31 +335,48 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
                 chaiHttpResponse = await chai
                     .request(app)
                     .patch('/matches/999')
-                    .send(editMatchInput);
+                    .send(editMatchInput)
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
                 expect(chaiHttpResponse.body.message).to.be.equal('No match found');
             });
 
             it('Verifica se a nova quantidade de gols do time da casa foi informada', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+                
                 chaiHttpResponse = await chai
                     .request(app)
                     .patch('/matches/51')
                     .send({
                         awayTeamGoals: 5,
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
                 expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
             });
 
             it('Verifica se a nova quantidade de gols do time de fora foi informada', async () => {
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+
                 chaiHttpResponse = await chai
                     .request(app)
                     .patch('/matches/51')
                     .send({
                         homeTeamGoals: 5,
-                    });
+                    })
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
                 expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
@@ -314,13 +389,21 @@ describe('Verifica os casos de falha referentes aos endpoints referentes a match
             // VER QUESTÃO DO TOKEN
             it('Verifica se a partida existe', async () => {
                 // ID
+                sinon.stub(jwt, 'verify').callsFake(() => {
+                    return decodedToken;
+                });
+                sinon
+                    .stub(jwtUtils, 'verifyToken')
+                    .returns(decodedToken);
+
                 sinon
                 .stub(MatchModel, 'findOne')
                 .resolves(null);
 
                 chaiHttpResponse = await chai
                     .request(app)
-                    .patch('/matches/999/finish');
+                    .patch('/matches/999/finish')
+                    .set('Authorization', 'token');
 
                 expect(chaiHttpResponse).to.have.status(400);
                 expect(chaiHttpResponse.body.message).to.be.equal('No match found');
